@@ -1,6 +1,30 @@
 #include "tom_shelleck.h"
 
 /**
+ * parents_forking - runs the array of command tokens given
+ * args: array of command tokens
+ * Return: 0
+ */
+int parents_forking(char **args)
+{
+	int child, status, waitv, i;
+
+	child = fork();
+/* if we're in the child process */
+	if (child == 0)
+/* run arguments and print error msg on error */
+		if (execve(args[0], args, NULL) == -1)
+			perror("Ececve");
+/* make parent wait for child to exit and check for error before continuing */
+	if ((waitv = waitpid(child, &status, 0)) == -1)
+		perror("Wait");
+	for (i = 0; args[i]; i++)
+		free(args[i]);
+	free(args);
+	return (0);
+}
+
+/**
  * word_count - counts the number of words in a string
  * @str: string input
  * @del: word delimiter
@@ -28,21 +52,21 @@ int word_count(char *str, char *del)
 	return (wordcount);
 }
 /**
- * strtok_array_test - splits a string and returns an array of each word
+ * strtok_array - splits a string and returns an array of each word
  * @str: string input
- * @del: word delimiter
  * Return: array of tokens ending in a NULL pointer, or NULL on error
  * Description: uses word_count to dynamically allocate for the number of
  * pointers needed, adding one for a NULL terminator, and _strdup to copy
  * each strtok result into the array
  */
-char **strtok_array_test(char *str, char *del)
+char **strtok_array(char *str)
 {
 	char **arr;
 	int i;
 	char *token;
+	char *del = " ";
 
-	if (!str || !del)
+	if (!str)
 		return (NULL);
 /* we need a pointer for each word, plus a NULL pointer to end the array */
 	arr = malloc(sizeof(char *) * (word_count(str, del) + 1));
@@ -65,4 +89,29 @@ char **strtok_array_test(char *str, char *del)
 	}
 	arr[i] = NULL;
 	return (arr);
+}
+
+/**
+ * main - takes arguments from cmd line and runs them
+ * Return: 0, or 1 on error
+ */
+int main(void)
+{
+	size_t len = 1024;
+	char *buf = malloc(sizeof(char) * len);
+	ssize_t getlen;
+
+	if (!buf)
+		return (1);
+	printf("$ ");
+/* run getline to wait for stdin and place in buffer */
+	if ((getlen = getline(&buf, &len, stdin)) != -1)
+	{
+/* if no error, change the newline to NULL byte in buf string */
+		buf[getlen - 1] = 00;
+/* pass the argument array created by strtok_array to cmd executer */
+		parents_forking(strtok_array(buf));
+	}
+	free(buf);
+	return (0);
 }
