@@ -24,5 +24,11 @@ int parents_forking(char **args);
 char *_getenv(const char *name);
 node_t *add_node_end(node_t **head, char *str);
 void free_node(node_t *head);
+void *_realloc(void *ptr, unsigned int old_size, unsigned int new_size);
+int _setenv(const char *name, const char *value, int overwrite);
+int _unsetenv(const char *name);
+char *_strcpy(char *dest, char *src);
+int env_index(const char *name);
+
 
 #endif /* TOM_SHELLECK_H */
