@@ -1,14 +1,57 @@
 #include "tom_shelleck.h"
 
 /**
+ * path_finder - appends the correct directory to the first command string
+ * @args: address to array of argument strings
+ */
+void path_finder(char ***args)
+{
+	int i;
+	char **path_tkn;
+	char *tmp;
+
+/* create a token array for PATH value */
+	tmp = _getenv("PATH");
+	path_tkn = (strtok_array(tmp, ":"));
+	free(tmp);
+/* Is first argument in any PATH directory? Change arg[0] to full path if so */
+	for (i = 0; path_tkn[i]; i++)
+	{
+		tmp = cmd_path(*args[0], path_tkn[i]);
+		if (tmp != NULL)
+		{
+			free(*args[0]);
+			*args[0] = _strdup(tmp);
+			break;
+		}
+	}
+/* free PATH token array */
+	for (i = 0; path_tkn[i]; i++)
+		free(path_tkn[i]);
+	free(path_tkn);
+/* if argument wasn't found in PATH, check current directory */
+	if (tmp != NULL)
+	{
+/* Is first argument in current directory? Change arg[0] to full path if so */
+		tmp = cmd_cwd(*args[0]);
+		if (tmp != NULL)
+		{
+			free(*args[0]);
+			*args[0] = _strdup(tmp);
+		}
+	}
+	free(tmp);
+}
+/**
  * parents_forking - runs the array of command tokens given
- * args: array of command tokens
+ * @args: array of command tokens
  * Return: 0 on success, or 1 on error
  */
 int parents_forking(char **args)
 {
 	int child, status, waitv, i;
 
+	path_finder(&args);
 	child = fork();
 /* if we're in the child process */
 	if (child == 0)
@@ -22,7 +65,8 @@ int parents_forking(char **args)
 			_exit(1);
 		}
 /* make parent wait for child to exit and check for error before continuing */
-	if ((waitv = waitpid(child, &status, 0)) == -1)
+	waitv = waitpid(child, &status, 0);
+	if (waitv == -1)
 		perror("Wait");
 	for (i = 0; args[i]; i++)
 		free(args[i]);
@@ -60,6 +104,7 @@ int word_count(char *str, char *del)
 /**
  * strtok_array - splits a string and returns an array of each word
  * @str: string input
+ * @del: word delimeter string
  * Return: array of tokens ending in a NULL pointer, or NULL on error
  * Description: uses word_count to dynamically allocate for the number of
  * pointers needed, adding one for a NULL terminator, and _strdup to copy
@@ -70,7 +115,6 @@ char **strtok_array(char *str, char *del)
 	char **arr;
 	int i;
 	char *token;
-	char *del = " ";
 
 	if (!str)
 		return (NULL);

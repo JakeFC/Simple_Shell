@@ -37,7 +37,7 @@ char *_strdup(char *str)
 	return (s);
 }
 /**
- * *_strcpy - copies a string to another variable
+ * _strcpy - copies a string to another variable
  * @dest: destination variable
  * @src: string source
  * Return: pointer to dest
