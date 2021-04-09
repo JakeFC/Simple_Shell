@@ -6,64 +6,72 @@
  */
 void path_finder(char ***args)
 {
-	int i;
+	int i, cwdi;
 	char **path_tkn;
 	char *tmp;
 
 /* create a token array for PATH value */
 	tmp = _getenv("PATH");
+/* if an empty PATH value field is found, this is the index before */
+	cwdi = empty_path_check(tmp);
 	path_tkn = (strtok_array(tmp, ":"));
 	free(tmp);
 /* Is first argument in any PATH directory? Change arg[0] to full path if so */
 	for (i = 0; path_tkn[i]; i++)
 	{
+		if (i == cwdi)
+		{
+			tmp = cmd_cwd(*args[0]);
+			if (tmp != NULL)
+			{
+				string_switch(&*args[0], &tmp);
+				break;
+			}
+		}
 		tmp = cmd_path(*args[0], path_tkn[i]);
 		if (tmp != NULL)
 		{
-			free(*args[0]);
-			*args[0] = _strdup(tmp);
+			string_switch(&*args[0], &tmp);
 			break;
 		}
+	}
+	if (!tmp && i == cwdi)
+	{
+		tmp = cmd_cwd(*args[0]);
+		if (tmp != NULL)
+			string_switch(&*args[0], &tmp);
 	}
 /* free PATH token array */
 	for (i = 0; path_tkn[i]; i++)
 		free(path_tkn[i]);
 	free(path_tkn);
-/* if argument wasn't found in PATH, check current directory */
-	if (tmp == NULL)
-	{
-/* Is first argument in current directory? Change arg[0] to full path if so */
-		tmp = cmd_cwd(*args[0]);
-		if (tmp != NULL)
-		{
-			free(*args[0]);
-			*args[0] = _strdup(tmp);
-		}
-	}
 	free(tmp);
 }
 /**
  * parents_forking - runs the array of command tokens given
  * @args: array of command tokens
+ * @shell: shell executable name
  * Return: 0 on success, or 1 on error
  */
-int parents_forking(char **args)
+int parents_forking(char **args, char *shell)
 {
 	int child, status, waitv, i;
 
-	path_finder(&args);
+/* if directory of command not specified, search PATH and edit args[0] */
+	if (!slash_specified(args[0]))
+		path_finder(&args);
 	child = fork();
 /* if we're in the child process */
 	if (child == 0)
+	{
 /* run arguments and print error msg on error */
-		if (execve(args[0], args, NULL) == -1)
-		{
-			perror("./hsh");
-			for (i = 0; args[i]; i++)
-				free(args[i]);
-			free(args);
-			_exit(1);
-		}
+		if (execve(args[0], args, environ) == -1)
+			perror(shell);
+		for (i = 0; args[i]; i++)
+			free(args[i]);
+		free(args);
+		_exit(0);
+	}
 /* make parent wait for child to exit and check for error before continuing */
 	waitv = waitpid(child, &status, 0);
 	if (waitv == -1)
@@ -142,36 +150,38 @@ char **strtok_array(char *str, char *del)
 }
 
 /**
- * main - takes arguments from cmd line and runs them
+ * _getline - takes arguments from cmd line and runs them
+ * @shell: name of the shell executable
  * Return: 0, or 1 on error
  */
-int main(void)
+int _getline(char *shell)
 {
-	size_t len = 120;
-	char *buf = malloc(sizeof(char) * len);
+	size_t len = 0;
 	ssize_t getlen;
+	char *buf = NULL;
 
-	write(STDOUT_FILENO, "$ ", 2);
+	if (isatty(STDIN_FILENO))
+		write(STDOUT_FILENO, "$ ", 2);
 /* run getline to wait for stdin and place in buffer */
 	while ((getlen = getline(&buf, &len, stdin)) != -1)
 	{
 /* if no error, change the newline to NULL byte in buf string */
-		buf[getlen - 1] = 00;
+		if (buf[getlen - 1] == '\n')
+			buf[getlen - 1] = 00;
 /* pass the argument array created by strtok_array to cmd executer */
-		parents_forking(strtok_array(buf, " "));
+		parents_forking(strtok_array(buf, " "), shell);
 		if (isatty(STDIN_FILENO))
 			write(STDOUT_FILENO, "$ ", 2);
 	}
+	free(buf);
 	if (getlen == EOF)
 	{
 		if (isatty(STDIN_FILENO))
 			write(STDOUT_FILENO, "\n", 1);
-		free(buf);
 		return (0);
 	}
-	perror("./hsh");
+	perror(shell);
 	if (isatty(STDIN_FILENO))
 		write(STDOUT_FILENO, "\n", 1);
-	free(buf);
 	return (1);
 }

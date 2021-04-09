@@ -77,3 +77,44 @@ char *cmd_path(char *cmd, char *path)
         free(buf);
         return (NULL);
 }
+/**
+ * slash_specified - checks whether the argument contains a '/' character
+ * @str: string being checked
+ * Return: number of '/' characters found, or 0 for none
+ */
+int slash_specified(char *str)
+{
+	int i, count = 0;
+
+	if (!str)
+		return (0);
+	for (i = 0; str[i]; i++)
+		if (str[i] == '/')
+			count++;
+	return (count);
+}
+/**
+ * empty_path_check - checks the path value for an empty field
+ * @path: path value string
+ * Return: future token index before which current directory should be checked,
+ * or -1 if none found
+ */
+int empty_path_check(char *path)
+{
+	int i, index = 0;
+
+	if (!path)
+		return (-1);
+	for (i = 0; path[i]; i++)
+	{
+		if (i == 0 && path[i] == ':')
+			return (0);
+		if (path[i] == ':')
+			index++;
+		if (path[i] == ':' && path[i + 1] == ':')
+			return (index);
+		if (path[i] == ':' && path[i + 1] == 00)
+			return (index);
+	}
+	return (-1);
+}
