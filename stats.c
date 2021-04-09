@@ -1,5 +1,4 @@
 #include "tom_shelleck.h"
-
 /**
  * cmd_cwd - appends the cmd string to the current directory if found there
  * @cmd: first string of command
@@ -53,12 +52,12 @@ char *cmd_cwd(char *cmd)
  */
 char *cmd_path(char *cmd, char *path)
 {
-        unsigned int i, bi;
-        struct stat st;
-        char *buf;
+	unsigned int i, bi;
+	struct stat st;
+	char *buf;
 
-        if (!cmd || !path)
-                return (NULL);
+	if (!cmd || !path)
+		return (NULL);
 /*  allocate buffer for both strings, plus NULL byte and '/' char */
 	buf = malloc(sizeof(char) * (_strlen(cmd) + _strlen(path) + 2));
 	if (!buf)
@@ -67,15 +66,15 @@ char *cmd_path(char *cmd, char *path)
 	for (bi = 0; path[bi]; bi++)
 		buf[bi] = path[bi];
 /* start buffer index at end of directory name, replacing NULL byte with '/' */
-        buf[bi++] = '/';
+	buf[bi++] = '/';
 /* write the arguments into the buffer to get full path */
-        for (i = 0; cmd[i]; i++, bi++)
-                buf[bi] = cmd[i];
-        buf[bi] = 00;
-        if (stat(buf, &st) == 0)
-                return (buf);
-        free(buf);
-        return (NULL);
+	for (i = 0; cmd[i]; i++, bi++)
+		buf[bi] = cmd[i];
+	buf[bi] = 00;
+	if (stat(buf, &st) == 0)
+		return (buf);
+	free(buf);
+	return (NULL);
 }
 /**
  * slash_specified - checks whether the argument contains a '/' character
