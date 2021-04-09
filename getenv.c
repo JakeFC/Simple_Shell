@@ -1,18 +1,21 @@
 #include "tom_shelleck.h"
-
-extern char **environ;
-
+/**
+ * _getenv - Our Function
+ * Description: Our own made Getenv
+ * @name: Name of enviroment
+ * Return: NULL
+ */
 char *_getenv(const char *name)
 {
 	int i, ii, ni, count, start;
 	char *value;
 
 	for (i = 0; environ[i]; i++)
-                for (ni = 0, ii = 0; name[ni] && environ[i][ii]; ni++, ii++)
-                {
-                        if (environ[i][ii] != name[ni])
-                                break;
-                        if (environ[i][ii + 1] == '=' && !name[ni + 1])
+		for (ni = 0, ii = 0; name[ni] && environ[i][ii]; ni++, ii++)
+		{
+			if (environ[i][ii] != name[ni])
+				break;
+			if (environ[i][ii + 1] == '=' && !name[ni + 1])
 			{
 				start = ii + 2;
 				for (ii += 2, count = 0; environ[i][ii]; ii++)
@@ -30,7 +33,7 @@ char *_getenv(const char *name)
 }
 
 /**
- * env_index: finds the index in environ global variable where name is found
+ * env_index - finds the index in environ global variable where name is found
  * @name: environmental variable
  * Return: index of environ where name is found, or -1 if not
  */
@@ -39,11 +42,11 @@ int env_index(const char *name)
 	int i, ii, ni;
 
 	for (i = 0; environ[i]; i++)
-                for (ni = 0, ii = 0; name[ni] && environ[i][ii]; ni++, ii++)
-                {
-                        if (environ[i][ii] != name[ni])
-                                break;
-                        if (environ[i][ii + 1] == '=' && !name[ni + 1])
+		for (ni = 0, ii = 0; name[ni] && environ[i][ii]; ni++, ii++)
+		{
+			if (environ[i][ii] != name[ni])
+				break;
+			if (environ[i][ii + 1] == '=' && !name[ni + 1])
 				return (i);
 		}
 	return (-1);
