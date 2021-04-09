@@ -1,7 +1,4 @@
 #include "tom_shelleck.h"
-
-extern char **environ;
-
 /**
  * _setenv - changes or adds an environment variable
  * @name: variable name
@@ -64,7 +61,7 @@ void *_realloc(void *ptr, unsigned int old_size, unsigned int new_size)
 		return (ptr);
 	if (new_size == 0 && ptr)
 	{
-/*              	free(ptr);*/
+/* free(ptr); */
 		return (NULL);
 	}
 	if (!ptr)
@@ -94,30 +91,30 @@ void *_realloc(void *ptr, unsigned int old_size, unsigned int new_size)
  */
 void *_reallocf(void *ptr, unsigned int old_size, unsigned int new_size)
 {
-        char *s, *p;
-        int i, ptrmax;
+	char *s, *p;
+	int i, ptrmax;
 
-        if (new_size == old_size)
-                return (ptr);
-        if (new_size == 0 && ptr)
-        {
+	if (new_size == old_size)
+		return (ptr);
+	if (new_size == 0 && ptr)
+	{
 		free(ptr);
-                return (NULL);
-        }
-        if (!ptr)
-        {
-                s = malloc(new_size);
-                if (!s)
-                        return (NULL);
-                return (s);
-        }
-        s = malloc(new_size);
-        if (!s)
-                return (NULL);
-        p = ptr;
-        ptrmax = old_size > new_size ? new_size : old_size;
-        for (i = 0; i < ptrmax; i++)
-                s[i] = p[i];
+		return (NULL);
+	}
+	if (!ptr)
+	{
+		s = malloc(new_size);
+		if (!s)
+			return (NULL);
+		return (s);
+	}
+	s = malloc(new_size);
+	if (!s)
+		return (NULL);
+	p = ptr;
+	ptrmax = old_size > new_size ? new_size : old_size;
+	for (i = 0; i < ptrmax; i++)
+		s[i] = p[i];
 	free(ptr);
-        return (s);
+	return (s);
 }
