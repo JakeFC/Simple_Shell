@@ -25,12 +25,18 @@ int _setenv(const char *name, const char *value, int overwrite);
 int _unsetenv(const char *name);
 char *_strcpy(char *dest, char *src);
 int env_index(const char *name);
-void path_finder(char ***args);
+void path_finder(char **args);
 char *cmd_path(char *cmd, char *path);
 char *cmd_cwd(char *cmd);
 int slash_specified(char *str);
 int empty_path_check(char *path);
 int string_switch(char **prev,char **tmp);
+int exit_checker(char **args, char *shell);
+int _atoi(char *s);
+char *str_concat(char *s1, char *s2);
+void pexit_error(char *arg, char *shell);
+int _strcmp(char *s1, char *s2);
+int free_array(char **arr);
 
 
 #endif /* TOM_SHELLECK_H */
