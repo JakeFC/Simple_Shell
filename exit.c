@@ -10,6 +10,10 @@ int exit_checker(char **args, char *shell)
 {
 	int i;
 
+	if (!args)
+		return (0);
+	if (!args[0])
+		return (0);
 	if (_strcmp(args[0], "exit"))
 		return (0);
 	if (!args[1])
@@ -17,17 +21,18 @@ int exit_checker(char **args, char *shell)
 	for (i = 0; args[1][i]; i++)
 		if (args[1][i] < 48 || args[1][i] > 57)
 		{
-			pexit_error(args[1], shell);
+			perror_exit(args[1], shell);
 			return (2);
 		}
 	return (1);
 }
 /**
- * pexit_error - prints an exit error with given argument and shell names
+ * perror_exit - prints an exit error with given argument and shell names
  * @arg: argument string
  * @shell: shell executable name
+ * Return: 0
  */
-void pexit_error(char *arg, char *shell)
+int perror_exit(char *arg, char *shell)
 {
 	char *tmp1, *tmp2;
 
@@ -36,4 +41,5 @@ void pexit_error(char *arg, char *shell)
 	tmp1 = str_concat(tmp2, "\n"), free(tmp2);
 	write(STDERR_FILENO, tmp1, _strlen(tmp1));
 	free(tmp1);
+	return (0);
 }

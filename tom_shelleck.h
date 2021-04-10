@@ -34,9 +34,10 @@ int string_switch(char **prev,char **tmp);
 int exit_checker(char **args, char *shell);
 int _atoi(char *s);
 char *str_concat(char *s1, char *s2);
-void pexit_error(char *arg, char *shell);
+int perror_exit(char *arg, char *shell);
 int _strcmp(char *s1, char *s2);
 int free_array(char **arr);
+int perror_execve(char *arg, char *shell);
 
 
 #endif /* TOM_SHELLECK_H */

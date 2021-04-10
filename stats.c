@@ -58,6 +58,8 @@ char *cmd_path(char *cmd, char *path)
 
 	if (!cmd || !path)
 		return (NULL);
+	if (!path[0])
+		return (NULL);
 /*  allocate buffer for both strings, plus NULL byte and '/' char */
 	buf = malloc(sizeof(char) * (_strlen(cmd) + _strlen(path) + 2));
 	if (!buf)

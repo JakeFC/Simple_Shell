@@ -14,11 +14,12 @@ void path_finder(char **args)
 	tmp = _getenv("PATH");
 /* if an empty PATH value field is found, this is the index before */
 	cwdi = empty_path_check(tmp);
-	path_tkn = (strtok_array(tmp, ":"));
-	free(tmp);
-/* Is first argument in any PATH directory? Change arg[0] to full path if so */
+	path_tkn = (strtok_array(tmp, ":")), free(tmp);
+	if (!path_tkn)
+		return;
 	for (i = 0; path_tkn[i]; i++)
 	{
+/* check cwdi before path index when they are the same, break if found */
 		if (i == cwdi)
 		{
 			tmp = cmd_cwd(args[0]);
@@ -35,16 +36,14 @@ void path_finder(char **args)
 			break;
 		}
 	}
+/* check cwdi if it's the next index, but only if a path wasn't found first */
 	if (!tmp && i == cwdi)
 	{
 		tmp = cmd_cwd(args[0]);
 		if (tmp != NULL)
 			string_switch(&args[0], &tmp);
 	}
-/* free PATH token array */
-	for (i = 0; path_tkn[i]; i++)
-		free(path_tkn[i]);
-	free(path_tkn);
+	free_array(path_tkn);
 	free(tmp);
 }
 /**
@@ -68,7 +67,7 @@ int parents_forking(char **args, char *shell)
 	{
 /* run arguments and print error msg on error */
 		if (execve(args[0], args, environ) == -1)
-			perror(shell);
+			perror_execve(args[0], shell);
 		_exit(0);
 	}
 /* make parent wait for child to exit and check for error before continuing */
@@ -121,6 +120,8 @@ char **strtok_array(char *str, char *del)
 	char *token;
 
 	if (!str)
+		return (NULL);
+	if (!str[0])
 		return (NULL);
 /* we need a pointer for each word, plus a NULL pointer to end the array */
 	arr = malloc(sizeof(char *) * (word_count(str, del) + 1));
