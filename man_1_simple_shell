@@ -6,30 +6,42 @@
 
 .SH Name
 
-    The name of the command or function, followed by a one-line description of what it does.
+    sh  shell, the standard command language interpreter
 
 .SH SYNOPSIS
 
-    In the case of a command, you get a formal description of how to run it and what command line options it takes.
+    ./hsh
 
 .SH DESCRIPTION
 
-    A textual description of the functioning of the command or function.
+   The sh utility is a command language interpreter that shall
+   execute commands read from a command line string or the standard
+   input.
 
 .SH EXAMPLES
 
-    Some examples of common usage.
-.SH SEE ALSO
+    Non interactive mode example:
 
-    A list of related commands or functions.
+    $ echo "hello" | ./hsh
+    hello
+    $
+
+    interactive mode example:
+
+    $ ./hsh
+    ($) echo hello
+    hello
+    ($)
+
 
 .SH BUGS
 
-    List known bugs.
+    command error will print full path of command
 
 .SH AUTHORS
 
    Jacob Chavera & Hector Lozano
+
 .SH COPYRIGHT
 
     Partner Project created for Holberton School Tulsa, 2021.
