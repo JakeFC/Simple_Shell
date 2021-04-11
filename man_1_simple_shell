@@ -1,1 +1,35 @@
-Man Page
+.\"Simple Shell Man Page.
+
+.\" Contact Jacob.Chavera@holbertonschool.com or Hector.Lozano@holbertonschool.com to correct errors/typos
+
+.TH "9 MAR 2021" "Man_1_Simple_Shell"
+
+.SH Name
+
+    The name of the command or function, followed by a one-line description of what it does.
+
+.SH SYNOPSIS
+
+    In the case of a command, you get a formal description of how to run it and what command line options it takes.
+
+.SH DESCRIPTION
+
+    A textual description of the functioning of the command or function.
+
+.SH EXAMPLES
+
+    Some examples of common usage.
+.SH SEE ALSO
+
+    A list of related commands or functions.
+
+.SH BUGS
+
+    List known bugs.
+
+.SH AUTHORS
+
+   Jacob Chavera & Hector Lozano
+.SH COPYRIGHT
+
+    Partner Project created for Holberton School Tulsa, 2021.
