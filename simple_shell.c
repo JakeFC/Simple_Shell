@@ -4,7 +4,7 @@
  * path_finder - appends the correct directory to the first command string
  * @args: address to array of argument strings
  */
-void path_finder(char ***args)
+void path_finder(char **args)
 {
 	int i, cwdi;
 	char **path_tkn;
@@ -14,71 +14,66 @@ void path_finder(char ***args)
 	tmp = _getenv("PATH");
 /* if an empty PATH value field is found, this is the index before */
 	cwdi = empty_path_check(tmp);
-	path_tkn = (strtok_array(tmp, ":"));
-	free(tmp);
-/* Is first argument in any PATH directory? Change arg[0] to full path if so */
+	path_tkn = (strtok_array(tmp, ":")), free(tmp);
+	if (!path_tkn)
+		return;
 	for (i = 0; path_tkn[i]; i++)
 	{
+/* check cwdi before path index when they are the same, break if found */
 		if (i == cwdi)
 		{
-			tmp = cmd_cwd(*args[0]);
+			tmp = cmd_cwd(args[0]);
 			if (tmp != NULL)
 			{
-				string_switch(&*args[0], &tmp);
+				string_switch(&args[0], &tmp);
 				break;
 			}
 		}
-		tmp = cmd_path(*args[0], path_tkn[i]);
+		tmp = cmd_path(args[0], path_tkn[i]);
 		if (tmp != NULL)
 		{
-			string_switch(&*args[0], &tmp);
+			string_switch(&args[0], &tmp);
 			break;
 		}
 	}
+/* check cwdi if it's the next index, but only if a path wasn't found first */
 	if (!tmp && i == cwdi)
 	{
-		tmp = cmd_cwd(*args[0]);
+		tmp = cmd_cwd(args[0]);
 		if (tmp != NULL)
-			string_switch(&*args[0], &tmp);
+			string_switch(&args[0], &tmp);
 	}
-/* free PATH token array */
-	for (i = 0; path_tkn[i]; i++)
-		free(path_tkn[i]);
-	free(path_tkn);
+	free_array(path_tkn);
 	free(tmp);
 }
 /**
  * parents_forking - runs the array of command tokens given
- * @args: array of command tokens
+ * @args: address of array of command tokens
  * @shell: shell executable name
- * Return: 0 on success, or 1 on error
+ * Return: 0
  */
 int parents_forking(char **args, char *shell)
 {
-	int child, status, waitv, i;
+	int child, status, waitv;
 
+	if (!args)
+		return (0);
 /* if directory of command not specified, search PATH and edit args[0] */
 	if (!slash_specified(args[0]))
-		path_finder(&args);
+		path_finder(args);
 	child = fork();
 /* if we're in the child process */
 	if (child == 0)
 	{
 /* run arguments and print error msg on error */
 		if (execve(args[0], args, environ) == -1)
-			perror(shell);
-		for (i = 0; args[i]; i++)
-			free(args[i]);
-		free(args);
+			perror_execve(args[0], shell);
 		_exit(0);
 	}
 /* make parent wait for child to exit and check for error before continuing */
 	waitv = waitpid(child, &status, 0);
 	if (waitv == -1)
 		perror("Wait");
-	for (i = 0; args[i]; i++)
-		free(args[i]);
-	free(args);
 	return (0);
 }
 
@@ -126,6 +121,8 @@ char **strtok_array(char *str, char *del)
 
 	if (!str)
 		return (NULL);
+	if (!str[0])
+		return (NULL);
 /* we need a pointer for each word, plus a NULL pointer to end the array */
 	arr = malloc(sizeof(char *) * (word_count(str, del) + 1));
 	if (!arr)
@@ -152,13 +149,14 @@ char **strtok_array(char *str, char *del)
 /**
  * _getline - takes arguments from cmd line and runs them
  * @shell: name of the shell executable
- * Return: 0, or 1 on error
+ * Return: 0, or the exit command argument if given
  */
 int _getline(char *shell)
 {
 	size_t len = 0;
 	ssize_t getlen;
-	char *buf = NULL;
+	char *buf = NULL, **args;
+	int exit_check, exit_code = 0;
 
 	if (isatty(STDIN_FILENO))
 		write(STDOUT_FILENO, "$ ", 2);
@@ -168,20 +166,25 @@ int _getline(char *shell)
 /* if no error, change the newline to NULL byte in buf string */
 		if (buf[getlen - 1] == '\n')
 			buf[getlen - 1] = 00;
+		args = strtok_array(buf, " ");
+		exit_check = exit_checker(args, shell);
+		if (exit_check == 1)
+		{
+			if (args[1])
+				exit_code = _atoi(args[1]);
+			free_array(args);
+			free(buf);
+			return (exit_code);
+		}
+		if (exit_check != 2)
 /* pass the argument array created by strtok_array to cmd executer */
-		parents_forking(strtok_array(buf, " "), shell);
+			parents_forking(args, shell);
+		free_array(args);
 		if (isatty(STDIN_FILENO))
 			write(STDOUT_FILENO, "$ ", 2);
 	}
 	free(buf);
-	if (getlen == EOF)
-	{
-		if (isatty(STDIN_FILENO))
-			write(STDOUT_FILENO, "\n", 1);
-		return (0);
-	}
-	perror(shell);
 	if (isatty(STDIN_FILENO))
 		write(STDOUT_FILENO, "\n", 1);
-	return (1);
+	return (0);
 }
