@@ -30,7 +30,7 @@ char *cmd_path(char *cmd, char *path);
 char *cmd_cwd(char *cmd);
 int slash_specified(char *str);
 int empty_path_check(char *path);
-int string_switch(char **prev,char **tmp);
+int string_switch(char **prev, char **tmp);
 
 
 #endif /* TOM_SHELLECK_H */
