@@ -1,14 +1,14 @@
 #include "tom_shelleck.h"
 
 /**
- * _atoi - converts a string to an integer
+ * _atoli - converts a string to a long integer
  * @s: string input
  * Return: integer value of string
  */
-int _atoi(char *s)
+long int _atoli(char *s)
 {
 	int a, c;
-	double b, i;
+	long b, i;
 
 /* start at the end of the string to find the ones' place */
 	for (a = 0; s[a] != '\0';)
@@ -35,4 +35,34 @@ int _atoi(char *s)
 			i = -i;
 	}
 	return (i);
+}
+/**
+ * _itoa - turns an int into a string
+ * @n: integer input
+ * Return: converted string
+ */
+char *_itoa(int n)
+{
+	unsigned int a = 0, c, d, nn, i = 0;
+	char *str;
+
+	nn = n;
+	if (!nn)
+		a = 1;
+	for (; nn; a++, nn /= 10)
+		;
+	str = malloc(sizeof(char) * (a + 1));
+	nn = n;
+	if (n < 0)
+	{
+		nn = -n;
+	}
+	c = 999999999;
+	d = 1000000000;
+	for (a = 0; a <= 8; a++, c /= 10, d /= 10)
+		if (nn > c)
+			str[i++] = (nn / d % 10 + '0');
+	str[i++] = (nn % 10 + '0');
+	str[i] = 00;
+	return (str);
 }

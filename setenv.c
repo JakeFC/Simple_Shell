@@ -45,7 +45,7 @@ int _setenv(const char *name, const char *value, int overwrite)
 	return (0);
 }
 /**
- * _realloc - reallocates a memory block
+ * _realloc - reallocates a memory block without freeing the old
  * @ptr: pointer to previous memory allocation
  * @old_size: size, in bytes, of the spaces allocated to ptr
  * @new_size: size, in bytes, of the new memory block
@@ -61,7 +61,6 @@ void *_realloc(void *ptr, unsigned int old_size, unsigned int new_size)
 		return (ptr);
 	if (new_size == 0 && ptr)
 	{
-/* free(ptr); */
 		return (NULL);
 	}
 	if (!ptr)
@@ -78,7 +77,6 @@ void *_realloc(void *ptr, unsigned int old_size, unsigned int new_size)
 	ptrmax = old_size > new_size ? new_size : old_size;
 	for (i = 0; i < ptrmax; i++)
 		s[i] = p[i];
-/*	free(ptr);*/
 	return (s);
 }
 /**

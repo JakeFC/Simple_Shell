@@ -11,5 +11,6 @@
 int main(int argc, char **argv)
 {
 	(void)argc;
+	signal(SIGINT, SIG_IGN);
 	return (_getline(argv[0]));
 }

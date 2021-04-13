@@ -50,11 +50,12 @@ void path_finder(char **args)
  * parents_forking - runs the array of command tokens given
  * @args: address of array of command tokens
  * @shell: shell executable name
+ * @line: line number for command
  * Return: 0
  */
-int parents_forking(char **args, char *shell)
+int parents_forking(char **args, char *shell, int line)
 {
-	int child, status, waitv;
+	int child, status, waitv, exitcode = 0;
 
 	if (!args)
 		return (0);
@@ -67,14 +68,19 @@ int parents_forking(char **args, char *shell)
 	{
 /* run arguments and print error msg on error */
 		if (execve(args[0], args, environ) == -1)
-			perror_execve(args[0], shell);
+		{
+			perror_execve(args[0], shell, line);
+			_exit(127);
+		}
 		_exit(0);
 	}
 /* make parent wait for child to exit and check for error before continuing */
 	waitv = waitpid(child, &status, 0);
 	if (waitv == -1)
-		perror("Wait");
-	return (0);
+		perror("waitpid");
+	if (WIFEXITED(status))
+		exitcode = WEXITSTATUS(status);
+	return (exitcode);
 }
 
 /**
@@ -156,7 +162,7 @@ int _getline(char *shell)
 	size_t len = 0;
 	ssize_t getlen;
 	char *buf = NULL, **args;
-	int exit_check, exit_code = 0;
+	int exit_check = 0, exit_code = 0, line = 1, errcode = 0;
 
 	if (isatty(STDIN_FILENO))
 		write(STDOUT_FILENO, "$ ", 2);
@@ -167,24 +173,26 @@ int _getline(char *shell)
 		if (buf[getlen - 1] == '\n')
 			buf[getlen - 1] = 00;
 		args = strtok_array(buf, " ");
-		exit_check = exit_checker(args, shell);
-		if (exit_check == 1)
+		exit_check = exit_checker(args, shell, line, &errcode);
+		if (exit_check == 2)
 		{
-			if (args[1])
-				exit_code = _atoi(args[1]);
-			free_array(args);
-			free(buf);
+			exit_code = _atoli(args[1]), free_array(args), free(buf);
 			return (exit_code);
 		}
-		if (exit_check != 2)
+		if (exit_check == 0)
 /* pass the argument array created by strtok_array to cmd executer */
-			parents_forking(args, shell);
-		free_array(args);
+			errcode = parents_forking(args, shell, line);
+		if (args)
+			free_array(args);
+		if (exit_check == 1)
+			break;
 		if (isatty(STDIN_FILENO))
 			write(STDOUT_FILENO, "$ ", 2);
+		else
+			line++;
 	}
 	free(buf);
-	if (isatty(STDIN_FILENO))
+	if (isatty(STDIN_FILENO) && exit_check != 1)
 		write(STDOUT_FILENO, "\n", 1);
-	return (0);
+	return (errcode);
 }

@@ -4,39 +4,53 @@
  * exit_checker - checks whether exit function was called
  * @args: array of argument tokens
  * @shell: name of shell executable
- * Return: 0 if not called, 1 if called correctly, 2 if called with error
+ * @line: line number of command
+ * @errcode: address of errorcode int
+ * Return: 0 if not called, 1 if called without argument, 2 if called with arg,
+ * or 3 if called with error or if empty string/array passed
  */
-int exit_checker(char **args, char *shell)
+int exit_checker(char **args, char *shell, int line, int *errcode)
 {
 	int i;
 
 	if (!args)
-		return (0);
+		return (3);
 	if (!args[0])
-		return (0);
+		return (3);
 	if (_strcmp(args[0], "exit"))
 		return (0);
 	if (!args[1])
 		return (1);
 	for (i = 0; args[1][i]; i++)
-		if (args[1][i] < 48 || args[1][i] > 57)
+		if (args[1][i] < 48 || args[1][i] > 57 || i > 9)
 		{
-			perror_exit(args[1], shell);
-			return (2);
+			perror_exit(args[1], shell, line);
+			*errcode = 2;
+			return (3);
 		}
-	return (1);
+	if (_atoli(args[1]) > INT_MAX)
+	{
+		perror_exit(args[1], shell, line);
+		*errcode = 2;
+		return (3);
+	}
+	return (2);
 }
 /**
  * perror_exit - prints an exit error with given argument and shell names
  * @arg: argument string
  * @shell: shell executable name
+ * @line: line number of command
  * Return: 0
  */
-int perror_exit(char *arg, char *shell)
+int perror_exit(char *arg, char *shell, int line)
 {
-	char *tmp1, *tmp2;
+	char *tmp1, *tmp2, *str_line;
 
-	tmp1 = str_concat(shell, ": 1: exit: Illegal number: ");
+	tmp1 = str_concat(shell, ": ");
+	str_line = _itoa(line);
+	tmp2 = str_concat(tmp1, str_line), free(tmp1), free(str_line);
+	tmp1 = str_concat(tmp2, ": exit: Illegal number: "), free(tmp2);
 	tmp2 = str_concat(tmp1, arg), free(tmp1);
 	tmp1 = str_concat(tmp2, "\n"), free(tmp2);
 	write(STDERR_FILENO, tmp1, _strlen(tmp1));
