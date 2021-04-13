@@ -1,1 +1,51 @@
-Man Page
+.\"Simple Shell Man Page.
+
+.\" Contact Jacob.Chavera@holbertonschool.com or Hector.Lozano@holbertonschool.com to correct errors/typos
+
+.TH "9 MAR 2021" "Man_1_Simple_Shell"
+
+.SH Name
+
+    sh  shell, the standard command language interpreter
+
+.SH SYNOPSIS
+
+    ./hsh
+
+.SH DESCRIPTION
+
+   The sh utility is a command language interpreter that shall
+   execute commands read from a command line string or the standard
+   input.
+
+.SH EXAMPLES
+
+    Non interactive mode example:
+
+    $ echo "hello" | ./hsh
+    hello
+    $
+
+    interactive mode example:
+
+    $ ./hsh
+    ($) echo hello
+    hello
+    ($)
+
+.SH Special Commands
+
+    
+
+
+.SH BUGS
+
+    command error will print full path of command
+
+.SH AUTHORS
+
+   Jacob Chavera & Hector Lozano
+
+.SH COPYRIGHT
+
+    Partner Project created for Holberton School Tulsa, 2021.

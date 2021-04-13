@@ -4,6 +4,12 @@ As Students at Holberton School Tulsa, we built a simple shell using C language.
 
 ## Example of Code
 
+$ ./hsh
+($) /bin/ls
+hsh main.c shell.c
+($)
+($) exit
+$
 
 
 ## How to Compile
@@ -21,14 +27,14 @@ _exit |
 fflush |
 fork |
 free |
-getcwd | 
+getcwd |
 getline |
 getpid |
 isatty |
 kill |
-malloc | 
+malloc |
 open |
-opendir | 
+opendir |
 perror |
 read |
 readdir |
@@ -40,7 +46,7 @@ wait |
 waitpid |
 wait3 |
 wait4 |
-write 
+write
 
 
 ## Contributors
