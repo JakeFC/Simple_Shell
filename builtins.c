@@ -26,7 +26,7 @@ int builtin_checker(char **args, char *shell, int line, int *errcode)
 	if (_strcmp(args[0], "unsetenv") == 0)
 	{
 		if (!args[1] || _unsetenv(args[1]) == -1)
-			perror("unsetenv");
+			*errcode = 2, perror("unsetenv");
 		return (3);
 	}
 	if (_strcmp(args[0], "env") == 0)

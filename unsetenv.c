@@ -9,6 +9,8 @@ int _unsetenv(const char *name)
 {
 	int i, size;
 
+	if (!name)
+		return (-1);
 	size = sizeof(char *);
 	i = env_index(name);
 	if (i < 0)

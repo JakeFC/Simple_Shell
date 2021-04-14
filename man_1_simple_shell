@@ -6,7 +6,7 @@
 
 .SH Name
 
-    sh  shell, the standard command language interpreter
+    hsh  shell, the non-standard command language interpreter
 
 .SH SYNOPSIS
 
@@ -14,7 +14,7 @@
 
 .SH DESCRIPTION
 
-   The sh utility is a command language interpreter that shall
+   The hsh utility is a command language interpreter that shall
    execute commands read from a command line string or the standard
    input.
 
@@ -22,21 +22,50 @@
 
     Non interactive mode example:
 
-    $ echo "hello" | ./hsh
+    $ echo "echo hello" | ./hsh
     hello
     $
 
     interactive mode example:
 
     $ ./hsh
-    ($) echo hello
-    hello
+    ($) echo world
+    world
     ($)
 
-.SH Special Commands
+.SH STDIN
 
+    Used only to receive commands to the interpreter.
 
+.SH STDOUT
 
+    Used to output the result of a successful command.
+
+.SH STDERR
+
+    Used to relay error messages in the use and execution of commands.
+
+.SH BUILTIN COMMANDS
+
+    ENV
+    -Prints the current environment variables list to stdout.
+
+    SETENV [NAME] [VALUE]
+    -Adds a variable to the environment with given name and value if it does
+     not exist, or replaces the value with the one given if it does.
+
+     UNSETENV [NAME]
+     -Removes a variable from the environment with given name.
+
+     EXIT [VALUE]
+     -Exits the shell with given numerical exit code. If none is given, the
+     shell exits with its default value (see EXIT STATUS for more info).
+
+.SH EXIT STATUS
+
+    If the exit command is not invoked with arguments, or the shell exits in
+    another manner, the exit status will be set to that of the previously
+    run command, or 0 if no command has been run.
 
 .SH BUGS
 
