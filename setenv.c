@@ -38,7 +38,7 @@ int _setenv(const char *name, const char *value)
 	if (!environ || !name)
 		return (-1);
 	if (!value || !value[0])
-                return (3);
+		return (3);
 	for (i = 0; name[i]; i++)
 		if (name[i] == '=')
 			return (-1);
@@ -52,12 +52,10 @@ int _setenv(const char *name, const char *value)
 		environ[i] = malloc(sizeof(char) * size);
 		if (!environ[i])
 			return (-1);
-		_strcpy(environ[i], (char *)name);
-		environ[i][start++] = '=';
+		_strcpy(environ[i], (char *)name), environ[i][start++] = '=';
 		for (ii = 0; start < size - 1; start++, ii++)
 			environ[i][start] = value[ii];
-		environ[i][start] = 00;
-		environ[++i] = NULL;
+		environ[i][start] = 00, environ[++i] = NULL;
 		return (3);
 	}
 	if (_getenv(name) && value[0])
@@ -69,8 +67,7 @@ int _setenv(const char *name, const char *value)
 		environ[i] = malloc(sizeof(char) * size);
 		if (!environ[i])
 			return (-1);
-		_strcpy(environ[i], (char *)name);
-		environ[i][start++] = '=';
+		_strcpy(environ[i], (char *)name), environ[i][start++] = '=';
 		for (ii = 0; start < size - 1; start++, ii++)
 			environ[i][start] = value[ii];
 		environ[i][start] = 00;
