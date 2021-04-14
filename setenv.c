@@ -37,6 +37,9 @@ int _setenv(const char *name, const char *value)
 
 	if (!environ || !name)
 		return (-1);
+	for (i = 0; name[i]; i++)
+		if (name[i] == '=')
+			return (-1);
 	size = _strlen((char *)name) + _strlen((char *)value) + 2;
 	start = _strlen((char *)name), psize = sizeof(char *);
 	if (!_getenv(name))
@@ -61,7 +64,7 @@ int _setenv(const char *name, const char *value)
 	{
 		i = env_index(name);
 		if (i < 0)
-			return (-1);
+			return (3);
 		free(environ[i]);
 		environ[i] = malloc(sizeof(char) * size);
 		if (!environ[i])
