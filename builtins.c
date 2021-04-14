@@ -1,15 +1,15 @@
 #include "tom_shelleck.h"
 
 /**
- * exit_checker - checks whether exit function was called
+ * builtin_checker - checks whether builtin functions were called
  * @args: array of argument tokens
  * @shell: name of shell executable
  * @line: line number of command
  * @errcode: address of errorcode int
  * Return: 0 if not called, 1 if called without argument, 2 if called with arg,
- * or 3 if called with error or if empty string/array passed
+ * or 3 if a builtin was called with error or an empty string/array was passed
  */
-int exit_checker(char **args, char *shell, int line, int *errcode)
+int builtin_checker(char **args, char *shell, int line, int *errcode)
 {
 	int i;
 
@@ -17,6 +17,18 @@ int exit_checker(char **args, char *shell, int line, int *errcode)
 		return (3);
 	if (!args[0])
 		return (3);
+	if (_strcmp(args[0], "setenv") == 0)
+	{
+		if (!args[1] || !args[2] || _setenv(args[1], args[2]) == -1)
+			*errcode = 2, perror("setenv");
+		return (3);
+	}
+	if (_strcmp(args[0], "unsetenv") == 0)
+	{
+		if (!args[1] || _unsetenv(args[1]) == -1)
+			perror("unsetenv");
+		return (3);
+	}
 	if (_strcmp(args[0], "exit"))
 		return (0);
 	if (!args[1])

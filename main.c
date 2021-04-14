@@ -11,6 +11,16 @@
 int main(int argc, char **argv)
 {
 	(void)argc;
-	signal(SIGINT, SIG_IGN);
+	signal(SIGINT, _handler);
+	environ = malloc_array(environ);
 	return (_getline(argv[0]));
+}
+/**
+ * _handler - prints a new prompt on a newline
+ * @sig: ignored input
+ */
+void _handler(int sig)
+{
+	(void)sig;
+	write(STDOUT_FILENO, "\n$ ", 3);
 }

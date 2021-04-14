@@ -55,7 +55,9 @@ void path_finder(char **args)
  */
 int parents_forking(char **args, char *shell, int line)
 {
-	int child, status, waitv, exitcode = 0;
+	int child, waitv, status, exitcode = 0;
+	char *tmp;
+	struct stat st;
 
 	if (!args)
 		return (0);
@@ -66,10 +68,20 @@ int parents_forking(char **args, char *shell, int line)
 /* if we're in the child process */
 	if (child == 0)
 	{
+		if (stat(args[0], &st) == -1)
+		{
+			perror_notfound(args[0], shell, line);
+			_exit(127);
+		}
+		if (access(args[0], X_OK) == -1)
+		{
+			tmp = error_input(args[0], shell, line), perror(tmp), free(tmp);
+			_exit(126);
+		}
 /* run arguments and print error msg on error */
 		if (execve(args[0], args, environ) == -1)
 		{
-			perror_execve(args[0], shell, line);
+			tmp = error_input(args[0], shell, line), perror(tmp), free(tmp);
 			_exit(127);
 		}
 		_exit(0);
@@ -161,7 +173,7 @@ int _getline(char *shell)
 {
 	size_t len = 0;
 	ssize_t getlen;
-	char *buf = NULL, **args;
+	char *buf = NULL, **args = NULL;
 	int exit_check = 0, exit_code = 0, line = 1, errcode = 0;
 
 	if (isatty(STDIN_FILENO))
@@ -173,17 +185,17 @@ int _getline(char *shell)
 		if (buf[getlen - 1] == '\n')
 			buf[getlen - 1] = 00;
 		args = strtok_array(buf, " ");
-		exit_check = exit_checker(args, shell, line, &errcode);
+		exit_check = builtin_checker(args, shell, line, &errcode);
 		if (exit_check == 2)
 		{
-			exit_code = _atoli(args[1]), free_array(args), free(buf);
+			exit_code = _atoli(args[1]), free_array(args);
+			free_array(environ), free(buf);
 			return (exit_code);
 		}
 		if (exit_check == 0)
 /* pass the argument array created by strtok_array to cmd executer */
 			errcode = parents_forking(args, shell, line);
-		if (args)
-			free_array(args);
+		free_array(args);
 		if (exit_check == 1)
 			break;
 		if (isatty(STDIN_FILENO))
@@ -191,7 +203,7 @@ int _getline(char *shell)
 		else
 			line++;
 	}
-	free(buf);
+	free_array(environ), free(buf);
 	if (isatty(STDIN_FILENO) && exit_check != 1)
 		write(STDOUT_FILENO, "\n", 1);
 	return (errcode);

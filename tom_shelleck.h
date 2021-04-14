@@ -25,8 +25,6 @@ int parents_forking(char **args, char *shell, int line);
 char *_getenv(const char *name);
 void *_realloc(void *ptr, unsigned int old_size, unsigned int new_size);
 void *_reallocf(void *ptr, unsigned int old_size, unsigned int new_size);
-int _setenv(const char *name, const char *value, int overwrite);
-int _unsetenv(const char *name);
 char *_strcpy(char *dest, char *src);
 int env_index(const char *name);
 void path_finder(char **args);
@@ -35,14 +33,19 @@ char *cmd_cwd(char *cmd);
 int slash_specified(char *str);
 int empty_path_check(char *path);
 int string_switch(char **prev, char **tmp);
-int exit_checker(char **args, char *shell, int line, int *errcode);
+int builtin_checker(char **args, char *shell, int line, int *errcode);
 long int _atoli(char *s);
 char *str_concat(char *s1, char *s2);
 int perror_exit(char *arg, char *shell, int line);
+int perror_notfound(char *arg, char *shell, int line);
+char *error_input(char *arg, char *shell, int line);
 int _strcmp(char *s1, char *s2);
 int free_array(char **arr);
-int perror_execve(char *arg, char *shell, int line);
 char *_itoa(int n);
+char **malloc_array(char **arr);
+void _handler(int sig);
+int _unsetenv(const char *name);
+int _setenv(const char *name, const char *value);
 
 
 #endif /* TOM_SHELLECK_H */
