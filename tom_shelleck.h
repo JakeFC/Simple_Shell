@@ -46,6 +46,7 @@ char **malloc_array(char **arr);
 void _handler(int sig);
 int _unsetenv(const char *name);
 int _setenv(const char *name, const char *value);
+int _printenv(void);
 
 
 #endif /* TOM_SHELLECK_H */
