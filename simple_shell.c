@@ -61,8 +61,8 @@ int parents_forking(char **args, char *shell, int line)
 
 	if (!args)
 		return (0);
-/* if directory of command not specified, search PATH and edit args[0] */
-	if (!slash_specified(args[0]))
+/* if command doesn't have a full path, search PATH and edit args[0] */
+	if (stat(args[0], &st) == -1)
 		path_finder(args);
 	child = fork();
 /* if we're in the child process */
