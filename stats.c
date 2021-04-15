@@ -24,7 +24,8 @@ char *cmd_cwd(char *cmd)
 	}
 /* start buffer index at end of directory name */
 	bi = _strlen(buf);
-	buf[bi++] = '/';
+	if (cmd[0] != '/')
+		buf[bi++] = '/';
 /* write the arguments into the buffer to get full path */
 	for (i = 0; cmd[i]; i++, bi++)
 	{
@@ -68,7 +69,8 @@ char *cmd_path(char *cmd, char *path)
 	for (bi = 0; path[bi]; bi++)
 		buf[bi] = path[bi];
 /* start buffer index at end of directory name, replacing NULL byte with '/' */
-	buf[bi++] = '/';
+	if (cmd[0] != '/')
+		buf[bi++] = '/';
 /* write the arguments into the buffer to get full path */
 	for (i = 0; cmd[i]; i++, bi++)
 		buf[bi] = cmd[i];
