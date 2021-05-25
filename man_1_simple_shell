@@ -1,8 +1,4 @@
-.\"Simple Shell Man Page.
-
-.\" Contact Jacob.Chavera@holbertonschool.com or Hector.Lozano@holbertonschool.com to correct errors/typos
-
-.TH "9 MAR 2021" "Man_1_Simple_Shell"
+.TH "Simple_Shell"1
 
 .SH Name
 
