@@ -51,7 +51,8 @@ write
 
 
 ## Contributors
-Jacob Chavera @JakeFC & Hector Lozano @HLozano12
+Jacob Chavera @JakeFC |
+Hector Lozano @HLozano12 |
 4/14/2021
 
 ## License
